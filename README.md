@@ -1,12 +1,62 @@
-# React + Vite
+# YuvaSetu: Volunteer-NGO Connection Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+YuvaSetu is a responsive web application designed to connect NGOs with volunteers. The platform enables NGOs to create positions and manage applications, while volunteers can find opportunities that match their skills and interests. The app operates entirely client-side using `localStorage` for data persistence.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## Expanding the ESLint configuration
+### 👤 For Volunteers:
+- Browse and apply for opportunities.
+- View application status (Pending, Accepted, Rejected).
+- Personalized dashboard with recommended positions.
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 🏢 For NGOs:
+- Create and manage volunteer positions.
+- View and manage applications for each position.
+- Dashboard with insights on applications and positions.
+
+### 🌐 General:
+- Offline-first functionality.
+- Responsive design for mobile, tablet, and desktop.
+- Role-based navigation and features.
+
+---
+
+## 🛠️ Getting Started
+
+Follow these steps to set up and run the project locally:
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Arkan-Khan/YuvaSetu.git
+```
+
+### 2. Navigate to the Project Directory
+
+```bash
+cd YuvaSetu
+```
+
+### 3. Install Dependencies
+
+```bash
+npm install
+```
+
+### 4. Start the Development Server
+
+```bash
+npm run dev
+```
+
+### 5. Open in Browser
+
+Visit [http://localhost:5173](http://localhost:5173) in your browser.
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
