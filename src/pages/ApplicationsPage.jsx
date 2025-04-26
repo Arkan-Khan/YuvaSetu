@@ -77,7 +77,7 @@ const ApplicationsPage = () => {
   }, [user, isVolunteer, isNgo]);
   
   // Handle application status update (for NGOs)
-  const handleUpdateStatus = (applicationId, newStatus) => {
+  const handleUpdateStatus = async (applicationId, newStatus) => {
     try {
       // Get all applications
       const allApplications = getData(STORAGE_KEYS.APPLICATIONS, []);
@@ -102,6 +102,32 @@ const ApplicationsPage = () => {
           return app;
         })
       );
+
+      // Get the application and volunteer details
+      const application = applications.find(app => app.applicationId === applicationId);
+      const volunteer = volunteers[application.volunteerId];
+
+      // Send email notification
+      if (volunteer?.email) {
+        try {
+          const response = await fetch('https://yuvasetu-mail-send.gillanuj1208.workers.dev/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: volunteer.email,
+              status: newStatus.toLowerCase()
+            }),
+          });
+
+          if (!response.ok) {
+            console.error('Failed to send email notification');
+          }
+        } catch (emailError) {
+          console.error('Error sending email notification:', emailError);
+        }
+      }
       
       // Show success message
       setSuccessMessage(`Application status updated to ${newStatus}`);
