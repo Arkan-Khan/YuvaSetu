@@ -86,13 +86,66 @@ const PositionApplicationsPage = () => {
     loadData();
   }, [positionId, user]);
   
+  // Send notification email to volunteer using Cloudflare Worker
+  const sendStatusNotificationEmail = async (volunteer, position, status) => {
+    try {
+      if (!volunteer.email) {
+        console.error('No email found for volunteer');
+        return false;
+      }
+      
+      const ngoData = getData(`${STORAGE_KEYS.USER_PREFIX}${user.id}`, {});
+      const ngoName = ngoData.name || user.name || 'Organization';
+      
+      // Call your Cloudflare Worker endpoint
+      const response = await fetch('https://yuvasetu-mail-send.gillanuj1208.workers.dev', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: volunteer.email,
+          status: status === APPLICATION_STATUS.ACCEPTED ? 'success' : 'failure',
+          // You can add more custom data if needed
+          metadata: {
+            volunteerName: volunteer.name || 'Volunteer',
+            positionTitle: position.title,
+            ngoName: ngoName
+          }
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Failed to send email: ${errorData.error || 'Unknown error'}`);
+      }
+      
+      const data = await response.json();
+      console.log('Email sent successfully:', data);
+      return true;
+    } catch (error) {
+      console.error('Failed to send email notification:', error);
+      return false;
+    }
+  };
+  
   // Handle application status update
-  const handleUpdateStatus = (applicationId, newStatus) => {
+  const handleUpdateStatus = async (applicationId, newStatus) => {
     try {
       // Get all applications
       const allApplications = getData(STORAGE_KEYS.APPLICATIONS, []);
       
-      // Find and update the specific application
+      // Find the application to update
+      const applicationToUpdate = allApplications.find(app => app.applicationId === applicationId);
+      
+      if (!applicationToUpdate) {
+        throw new Error('Application not found');
+      }
+      
+      // Get volunteer data
+      const volunteer = volunteers[applicationToUpdate.volunteerId] || {};
+      
+      // Update the application status
       const updatedApplications = allApplications.map(app => {
         if (app.applicationId === applicationId) {
           return { ...app, status: newStatus };
@@ -113,8 +166,13 @@ const PositionApplicationsPage = () => {
         })
       );
       
+      // Send email notification
+      const emailSent = await sendStatusNotificationEmail(volunteer, position, newStatus);
+      
       // Show success message
-      setSuccessMessage(`Application status updated to ${newStatus}`);
+      setSuccessMessage(
+        `Application status updated to ${newStatus}${emailSent ? ' and notification email sent' : ''}`
+      );
       
       // Clear success message after delay
       setTimeout(() => {
@@ -420,4 +478,4 @@ const PositionApplicationsPage = () => {
   );
 };
 
-export default PositionApplicationsPage; 
+export default PositionApplicationsPage;
